@@ -5,8 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.jonathan.countryviewer.domain.datamodels.Country
 
-class CountryAdapter(private val countries: List<String>) : RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {
+class CountryAdapter(private val countries: List<Country>) : RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {
 
     class CountryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val countryName: TextView = view.findViewById(android.R.id.text1)
@@ -19,7 +20,7 @@ class CountryAdapter(private val countries: List<String>) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
-        holder.countryName.text = countries[position]
+        holder.countryName.text = countries[position].name
     }
 
     override fun getItemCount(): Int = countries.size
