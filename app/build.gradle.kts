@@ -35,8 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    // Use view-binding. No need for data binding, as ViewModel will be used:
     buildFeatures {
-        compose = true
+        viewBinding = true
     }
 }
 

@@ -1,39 +1,29 @@
 package com.example.jonathan.countryviewer
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.jonathan.countryviewer.data.repository.CountryRepository
+import com.example.jonathan.countryviewer.databinding.ActivityMainBinding
 import com.example.jonathan.countryviewer.presentation.view.CountryAdapter
 import com.example.jonathan.countryviewer.presentation.viewmodel.CountryViewModel
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: CountryViewModel
+    private val viewModel: CountryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        viewModel = CountryViewModel(CountryRepository())
-        //viewModel.viewModelScope.launch(Dispatchers.IO) {
-            viewModel.getData()
-        //}
+        val binding = ActivityMainBinding.inflate(layoutInflater)
 
-        // TODO: Replace with actual list of countries
-        val countries = viewModel.countries.value ?: emptyList()
+        setContentView(binding.root)
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = CountryAdapter(countries)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        //viewModel.viewModelScope.launch(Dispatchers.IO) {
-            viewModel.getData()
-        //}
+        viewModel.countries.observe(this) { countries ->
+            binding.recyclerView.apply {
+                layoutManager = LinearLayoutManager(this@MainActivity)
+                adapter = CountryAdapter(countries)
+            }
+        }
     }
 }
 
