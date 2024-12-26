@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // Use Kotlin serialization plugin:
+    alias(libs.plugins.kotlinSerialization)
 }
 
 android {
@@ -60,7 +63,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Use REcyclerView:
+    // Use RecyclerView:
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.appcompat)
+
+    // Use Ktor for RESTful API:
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.json)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    //implementation(libs.kotlinx.serialization)
 }

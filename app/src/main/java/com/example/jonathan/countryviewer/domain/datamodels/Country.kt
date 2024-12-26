@@ -1,5 +1,8 @@
 package com.example.jonathan.countryviewer.domain.datamodels
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Country(
     val name: String = "no name",
     val region: String = "no region",
