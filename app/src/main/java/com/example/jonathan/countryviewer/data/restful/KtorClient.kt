@@ -1,5 +1,6 @@
 package com.example.jonathan.countryviewer.data.restful
 
+import android.util.Log
 import com.example.jonathan.countryviewer.domain.datamodels.Country
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -14,6 +15,9 @@ import kotlinx.serialization.json.Json
 
 private const val TAG = "CV: KtorClient: "
 
+/**
+ * This singleton is the Ktor client.
+ */
 object KtorClient {
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
@@ -29,15 +33,17 @@ object KtorClient {
     }
 
     suspend fun getCountries(url: String): List<Country> {
-        println(TAG + "getCountries: url=[$url]")
+        Log.d(TAG, "getCountries: url=[$url]")
 
         try {
             val httpResponse = client.get(url)
 
-            println(TAG + "getCountries: httpResponse.status=[${httpResponse.status}]")
-            println(TAG + "getCountries: httpResponse=[$httpResponse]")
+            Log.v(TAG, "getCountries: httpResponse.status=[${httpResponse.status}]")
+            Log.v(TAG, "getCountries: httpResponse=[$httpResponse]")
+
             val stringBody: String = httpResponse.body()
-            println(TAG + "getCountries: stringBody=[$stringBody]")
+
+            Log.v(TAG, "getCountries: stringBody=[$stringBody]")
 
             // TODO: fix crash:
             //val countries: List<Country> = httpResponse.body()
@@ -48,18 +54,30 @@ object KtorClient {
             }
             val countries: List<Country> = json.decodeFromString(stringBody)
 
-            println(TAG + "getCountries: [${countries.size}] countries found.")
+            Log.v(TAG, "getCountries: [${countries.size}] countries found.")
 
             return countries
-        } catch (e: Exception) {
-            println(TAG + "getCountries: stackTrace=\n${e.stackTraceToString()}")
-        }
+        } catch (e: java.net.SocketException) {
+            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
 
-        // TODO: If noting is found:
-        return listOf(
-            Country("USA", "North America", "US", "Washington, D.C."),
-            Country("Japan", "Asia", "JP", "Tokyo"),
-            Country("UK", "Europe", "GB", "London"),
-        )
+            // Inform user of lack of internet connection:
+            return listOf(
+                Country("SocketException", "Please connect to internet", "then", "restart the app"),
+            )
+        } catch (e: java.nio.channels.UnresolvedAddressException) {
+            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+
+            // Inform user of lack of internet connection:
+            return listOf(
+                Country("UnresolvedAddressException", "Please connect to internet", "then", "restart the app"),
+            )
+        } catch (e: Exception) { // Other errors:
+            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+
+            // Inform user of other errors:
+            return listOf(
+                Country("Something went wrong", "Please contact the developer", "for", "assistance"),
+            )
+        }
     }
 }
