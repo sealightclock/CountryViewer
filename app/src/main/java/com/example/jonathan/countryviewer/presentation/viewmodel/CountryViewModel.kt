@@ -11,18 +11,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CountryViewModel : ViewModel() {
-    // TODO: Implement Dependency Injection if needed:
+    // Create a use case for getting the countries:
     val getCountriesUseCase = GetCountriesUseCase(
         repository = CountryRepository()
     )
-    
+
+    // Create a live data for representing the countries:
     private val _countries = MutableLiveData<List<Country>>()
     val countries: LiveData<List<Country>> = _countries
 
+    // Initialize the ViewModel:
     init {
         getData()
     }
 
+    // Get data from the use case:
     private fun getData() {
         viewModelScope.launch (Dispatchers.IO) {
             _countries.postValue(getCountriesUseCase())

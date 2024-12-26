@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 private const val TAG = "CV: KtorClient: "
 
 /**
- * This singleton is the Ktor client calling RESTful APIs.
+ * This singleton is the Ktor client that makes calls to RESTful APIs.
  */
 object KtorClient {
     private val client = HttpClient(CIO) {
@@ -39,12 +39,12 @@ object KtorClient {
         }
     }
 
-    suspend fun getCountries(url: String): List<Country> {
-        Log.d(TAG, "getCountries: url=[$url]")
+    suspend fun getCountries(fullUrlStr: String): List<Country> {
+        Log.d(TAG, "getCountries: fullUrlStr=[$fullUrlStr]")
 
         // Handle response:
         try {
-            val httpResponse = client.get(url)
+            val httpResponse = client.get(fullUrlStr)
 
             // Handle empty content:
             if (httpResponse.contentLength() == 0L) {
@@ -56,7 +56,9 @@ object KtorClient {
 
             val stringBody: String
 
-            // Handle response status codes:
+            // Handle response status codes.
+            // In case of error or exception or edge case, return a dummy country to be displayed
+            // on the screen, and output logging messages:
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
                     stringBody = httpResponse.body<String>()
