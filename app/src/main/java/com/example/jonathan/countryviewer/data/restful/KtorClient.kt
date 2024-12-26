@@ -9,6 +9,7 @@ import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 private const val TAG = "CV: KtorClient: "
@@ -39,7 +40,13 @@ object KtorClient {
             println(TAG + "getCountries: stringBody=[$stringBody]")
 
             // TODO: fix crash:
-            val countries: List<Country> = httpResponse.body()
+            //val countries: List<Country> = httpResponse.body()
+
+            // TODO: This is a workaround to fix the above crash:
+            val json = Json {
+                ignoreUnknownKeys = true
+            }
+            val countries: List<Country> = json.decodeFromString(stringBody)
 
             println(TAG + "getCountries: [${countries.size}] countries found.")
 
