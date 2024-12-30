@@ -28,6 +28,7 @@ class CountryViewModel : ViewModel() {
     // Get data from the use case:
     private fun getData() {
         viewModelScope.launch (Dispatchers.IO) {
+            // For live data, use postValue instead of setValue:
             _countries.postValue(getCountriesUseCase())
         }
     }

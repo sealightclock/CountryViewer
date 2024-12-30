@@ -7,9 +7,12 @@ import com.example.jonathan.countryviewer.domain.datamodels.IRepository
 
 private const val TAG = "CV: CountryRepository: "
 
-// Url given by this project:
+// URL given by this assignment:
 const val FULL_URL_STR = "https://gist.githubusercontent.com/peymano-wmt/32dcb892b06648910ddd40406e37fdab/raw/db25946fd77c5873b0303b858e861ce724e0dcd0/countries.json"
 
+/**
+ * Repository to get countries from the web.
+ */
 class CountryRepository : IRepository {
     override suspend fun fetchCountries(fullUrlStr: String): List<Country> {
         Log.d(TAG, "fetchCountries: fullUrlStr=[$fullUrlStr]")

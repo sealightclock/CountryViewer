@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 private const val TAG = "CV: KtorClient: "
 
 /**
- * This singleton is the Ktor client that makes calls to RESTful APIs.
+ * This singleton class is the Ktor client that makes calls to RESTful APIs.
  */
 object KtorClient {
     private val client = HttpClient(CIO) {
@@ -31,7 +31,7 @@ object KtorClient {
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000 // 5 seconds
+            requestTimeoutMillis = 10000 // 10 seconds
         }
 
         install(Logging) {
@@ -49,6 +49,7 @@ object KtorClient {
             // Handle empty content:
             if (httpResponse.contentLength() == 0L) {
                 Log.e(TAG, "getCountries: contentLength == 0 !!")
+                // For debugging purposes, display a single dummy country with a message:
                 return listOf(
                     Country("contentLength == 0", "Please contact developer", "for", "assistance"),
                 )
@@ -57,12 +58,10 @@ object KtorClient {
             val stringBody: String
 
             // Handle response status codes.
-            // In case of error or exception or edge case, return a dummy country to be displayed
-            // on the screen, and output logging messages:
             when (httpResponse.status) {
                 HttpStatusCode.OK -> {
                     stringBody = httpResponse.body<String>()
-                    Log.v(TAG, "getCountries: OK: stringBody=[$stringBody]")
+                    Log.v(TAG, "getCountries: Status is OK: stringBody=[$stringBody]")
                 }
                 HttpStatusCode.BadRequest -> {
                     Log.e(TAG, "getCountries: BadRequest !!")
@@ -93,18 +92,18 @@ object KtorClient {
 
                 Log.v(TAG, "getCountries: 1st method: [${countries.size}] countries found.")
             } catch (e: Exception) {
-                Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+                Log.e(TAG, "getCountries: 1st method: stackTrace=\n${e.stackTraceToString()}")
 
-                // TODO: This is a back-up solution in case the above call failed:
+                // TODO: This is a back-up 2nd method in case the above call failed:
                 val json = Json {
                     ignoreUnknownKeys = true
                 }
 
-                // Handle deserialization with backup solution:
+                // Handle deserialization with back-up 2nd method:
                 try {
                     countries = json.decodeFromString(stringBody)
                 } catch (e: Exception) {
-                    Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+                    Log.e(TAG, "getCountries: 2nd method: stackTrace=\n${e.stackTraceToString()}")
                     return listOf(
                         Country("{2nd method failed}", "Please contact developer", "for", "assistance"),
                     )
@@ -115,17 +114,17 @@ object KtorClient {
 
             return countries
         } catch (e: java.net.SocketException) {
-            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+            Log.e(TAG, "getCountries: SocketException: stackTrace=\n${e.stackTraceToString()}")
             return listOf(
                 Country("SocketException", "Please connect to internet", "then", "restart the app"),
             )
         } catch (e: java.nio.channels.UnresolvedAddressException) {
-            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+            Log.e(TAG, "getCountries: UnresolvedAddressException: stackTrace=\n${e.stackTraceToString()}")
             return listOf(
                 Country("UnresolvedAddressException", "Please connect to internet", "then", "restart the app"),
             )
         } catch (e: Exception) { // Other errors:
-            Log.e(TAG, "getCountries: stackTrace=\n${e.stackTraceToString()}")
+            Log.e(TAG, "getCountries: other exception: stackTrace=\n${e.stackTraceToString()}")
             return listOf(
                 Country("Something went wrong", "Please contact the developer", "for", "assistance"),
             )
